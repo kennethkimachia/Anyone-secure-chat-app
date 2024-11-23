@@ -1,87 +1,49 @@
 import React, { useState } from 'react';
-import { createDID } from '../sessions/didSession';
 
-const SignUpPage = () => {
-  const [useExistingDid, setUseExistingDid] = useState(false);
-  const [did, setDid] = useState('');
-  const [userDid, setUserDid] = useState(null);
+function SignupPage() {
+    const [status, setStatus] = useState("Not connected");
+    const [profile, setProfile] = useState(null);
 
-  const handleSignUp = async (event) => {
-    event.preventDefault();
-  
-    let newDid;
-  
-    if (useExistingDid) {
-      newDid = did;
-    } else {
-      // Create a new DID
-      const didInstance = await createDID();
-      newDid = didInstance.id;
-  
-      // Optionally, store the DID instance or its seed securely on the client side
-      localStorage.setItem('didSeed', JSON.stringify(didInstance._provider._key));
+    async function connectWallet() {
+        try {
+            if (!window.ethereum) {
+                setStatus("MetaMask not installed");
+                return;
+            }
+
+            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            const walletAddress = accounts[0];
+            setStatus("Wallet connected: " + walletAddress);
+
+            // Verify wallet or create new user
+            const response = await fetch("https://example.com/auth/connect", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ walletAddress }),
+            });
+
+            const data = await response.json();
+
+            if (data.newUser) {
+                // Redirect to profile setup page
+                window.location.href = "/profile-setup";
+            } else {
+                // Load user profile
+                setProfile(data.profile);
+            }
+        } catch (error) {
+            setStatus("Error connecting wallet: " + error.message);
+        }
     }
-  
-    // Send the DID to the backend
-    const response = await fetch('/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        did: newDid,
-        createNew: !useExistingDid,
-      }),
-    });
-  
-    const data = await response.json();
-  
-    if (response.ok) {
-      setUserDid(data.did);
-      localStorage.setItem('userDid', data.did);
-    } else {
-      console.error('Signup error:', data.error);
-    }
-  };
-  
 
-  return (
-    <div className="container mx-auto p-4">
-    <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
-    <form onSubmit={handleSignUp} className="space-y-4">
-      <div>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={useExistingDid}
-            onChange={() => setUseExistingDid(!useExistingDid)}
-            className="mr-2"
-          />
-          I have an existing DID
-        </label>
-      </div>
-      {useExistingDid && (
+    return (
         <div>
-          <label className="block mb-2">Enter your DID:</label>
-          <input
-            type="text"
-            value={did}
-            onChange={(e) => setDid(e.target.value)}
-            className="border p-2 w-full"
-            required
-          />
+            <h1>Connect Your Wallet</h1>
+            <button onClick={connectWallet}>Connect Wallet</button>
+            <p>{status}</p>
+            {profile && <div>Welcome back, {profile.username}!</div>}
         </div>
-      )}
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-        {useExistingDid ? 'Sign Up with Existing DID' : 'Create New DID'}
-      </button>
-    </form>
-    {userDid && (
-      <div className="mt-4">
-        <p>Your DID: {userDid}</p>
-        {/* Provide further instructions or redirect to another page */}
-      </div>
-    )}
-  </div>
-  );
-};
+    );
+}
 
-export default SignUpPage;
+export default SignupPage;
