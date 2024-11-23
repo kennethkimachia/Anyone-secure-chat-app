@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,7 +12,11 @@
   "description": "",
   "dependencies": {
     "@anyone-protocol/anyone-client": "^0.4.2",
+    "did-session": "^4.0.0",
+    "dids": "^5.0.3",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "mongodb": "^6.11.0",
     "nodemon": "^3.1.7"
   }
 }
