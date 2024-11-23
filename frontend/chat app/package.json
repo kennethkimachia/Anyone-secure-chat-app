@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@metamask/onboarding": "^1.0.1",
     "@stablelib/random": "^2.0.0",
     "axios": "^1.7.7",
     "did-session": "^4.0.0",

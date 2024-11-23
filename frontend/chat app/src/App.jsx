@@ -6,6 +6,7 @@ import SignUpPage from "./pages/SignUpPage"
 import LoginPage from "./pages/LoginPage"
 import SettingsPage from "./pages/SettingsPage"
 import ProfilePage from "./pages/ProfilePage"
+import WalletConnectionPage from "./pages/WalletConnectionPage"
 
 
 
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/connect" element={<WalletConnectionPage />} />
 
       </Routes>
 
